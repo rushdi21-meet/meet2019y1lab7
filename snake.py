@@ -30,7 +30,7 @@ turtle.hideturtle()
 def new_stamp():
     snake_pos = snake.pos() #Get snake’s position
     #Append the position tuple to pos_list
-    pos_list.append(snake.pos) 
+    pos_list.append(snake.pos()) 
     #snake.stamp() returns a stamp ID. Save it in some variable
     
     snake_stamp1 = snake.stamp()
@@ -124,16 +124,16 @@ food_stamps = []
 #4. Don't forget to hide the food turtle!
 food_pos_num = 0
 for this_food_pos in food_pos :
-    food.hideturtle()
     food.penup()
     food.goto(food_pos[food_pos_num])
     food.pendown()
-    food.stamp()
-    food_stamps.append(food.pos())
+    food_stamp_id=food.stamp()
+    food_stamps.append(food_stamp_id)
     food_pos_num += 1
     if food_pos_num == 4:
         break
-    food.hideturtle()
+    #food.hideturtle()
+    
 def make_food():
     #The screen positions go from -SIZE/2 to +SIZE/2
     #But we need to make food pieces only appear on game squares
@@ -201,12 +201,13 @@ def move_snake():
     if new_y_pos <= DOWN_EDGE:
          print("You hit the bottom edge! Game over!")
          quit()
+    if snake.pos() in pos_list[:-1]:
+        quit()
      # You should write code to check for the left, top, and bottom edges.
     #####WRITE YOUR CODE HERE
     #Make the snake stamp a new square on the screen
     #Hint - use a single function to do this
     print (new_stamp())
-
     ######## SPECIAL PLACE - Remember it for Part 5
      #If snake is on top of food item
     if snake.pos() in food_pos:
@@ -216,26 +217,26 @@ def move_snake():
         food_stamps.pop(food_index) #Remove eaten food stamp
         print("You have eaten the food!")
         print(new_stamp())
-        #food_stamps.pop(food_index)
+    
 
         
         
     
 
+
     #HINT: This if statement may be useful for Part 8
 
-    ...
-    #Don't change the rest of the code in move_snake() function:
+  #Don't change the rest of the code in move_snake() function:
     #If you have included the timer so the snake moves 
     #automatically, the function should finish as before with a 
     #call to ontimer()
     turtle.ontimer(move_snake,TIME_STEP) #<--Last line of function
     #remove the last piece of the snake (Hint Functions are FUN!)
     print(remove_tail())
-    if len(food_stamps) <= 1 :
-       # food.clearstamps()
-        #turtle.clearstamps()
+    if len(food_stamps) <= 3:
+        
         make_food()
-        food.clearstamps()
+        
+    
 move_snake()    
 turtle.mainloop()
