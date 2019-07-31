@@ -1,3 +1,4 @@
+
 import turtle
 import random #We'll need this later in the lab
 
@@ -21,7 +22,9 @@ food_stamps = []
 
 #Set up positions (x,y) of boxes that make up the snake
 snake = turtle.clone()
-snake.shape("square")
+snake.shape("circle")
+snake.color("yellow")
+turtle.bgcolor("maroon")
 
 #Hide the turtle object (it's an arrow - we don't need to see it)
 turtle.hideturtle()
@@ -38,7 +41,7 @@ def new_stamp():
     stamp_list.append(snake_stamp1)
     #Draw a snake at the start of the game with a for loop
 #for loop should use range() and count up to the number of pieces
-#in the snake (i.e. START_LENGTH)
+#in the snake (i.e.START_LENGTH)
 for n  in range (START_LENGTH) :
     x_pos=snake.pos()[0] #Get x-position with snake.pos()[0]
     y_pos=snake.pos()[1] 
@@ -155,6 +158,58 @@ def make_food():
     food_pos.append(food.pos())
         ##3.WRITE YOUR CODE HERE: Add the food turtle's stamp to the food stamps list
     food_stamps.append(food.stamp())
+
+
+turtle.register_shape("poison.gif") #Add trash picture
+                      # Make sure you have downloaded this shape 
+                      # from the Google Drive folder and saved it
+                      # in the same folder as this Python script
+
+poison= turtle.clone()
+poison.shape("poison.gif") 
+
+#Locations of poison
+poison_pos = [(100,100), (-100,-100)]
+poison_stamps = []
+
+# Write code that:
+#1. moves the food turtle to each food position
+#2. stamps the food turtle at that location
+#3. saves the stamp by appending it to the food_stamps list using
+# food_stamps.append(    )
+#4. Don't forget to hide the food turtle!
+poison_pos_num = 0
+for this_poison_pos in poison_pos :
+    poison.penup()
+    poison.goto(poison_pos[poison_pos_num])
+    poison.pendown()
+    poison_stamp_id=poison.stamp()
+    poison_stamps.append(poison_stamp_id)
+    poison_pos_num += 1
+    if poison_pos_num == 4:
+        break
+    
+def make_poison():
+    #The screen positions go from -SIZE/2 to +SIZE/2
+    #But we need to make food pieces only appear on game squares
+    #So we cut up the game board into multiples of SQUARE_SIZE.
+    min1_x=-int(SIZE_X/2/SQUARE_SIZE)+1
+    max1_x=int(SIZE_X/2/SQUARE_SIZE)-1
+    min1_y=-int(SIZE_Y/2/SQUARE_SIZE)+1
+    max1_y=int(SIZE_Y/2/SQUARE_SIZE)-1
+    
+    #Pick a position that is a random multiple of SQUARE_SIZE
+    poison_x = random.randint(min1_x,max1_x)*SQUARE_SIZE
+    poison_y = random.randint(min1_y,max1_y)*SQUARE_SIZE
+
+        ##1.WRITE YOUR CODE HERE: Make the food turtle go to the randomly-generated
+        ##                        position
+    poison.penup()
+    poison.goto(poison_x,poison_y)
+        ##2.WRITE YOUR CODE HERE: Add the food turtle's position to the food positions list
+    poison_pos.append(poison.pos())
+        ##3.WRITE YOUR CODE HERE: Add the food turtle's stamp to the food stamps list
+    poison_stamps.append(poison.stamp())
 def move_snake():
     my_pos = snake.pos()
     x_pos = my_pos[0]
@@ -217,7 +272,14 @@ def move_snake():
         food_stamps.pop(food_index) #Remove eaten food stamp
         print("You have eaten the food!")
         print(new_stamp())
-    
+
+    if snake.pos() in poison_pos:
+        poison_index=poison_pos.index(snake.pos()) #What does this do?
+        poison.clearstamp(poison_stamps[poison_index]) #Remove eaten food stamp
+        poison_pos.pop(poison_index) #Remove eaten food position
+        poison_stamps.pop(poison_index) #Remove eaten food stamp
+        print("You have eaten the the poison lol!!")
+        remove_tail()
 
         
         
@@ -233,10 +295,13 @@ def move_snake():
     turtle.ontimer(move_snake,TIME_STEP) #<--Last line of function
     #remove the last piece of the snake (Hint Functions are FUN!)
     print(remove_tail())
-    if len(food_stamps) <= 3:
+    if len(food_stamps) <= 5:
         
         make_food()
-        
+    if len(poison_stamps) <=2:
+
+        make_poison()
+        remove_tail()
     
 move_snake()    
 turtle.mainloop()
